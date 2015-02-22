@@ -6,17 +6,17 @@
 # Author: Christian Lohmann 2015
 #
 #
-# License: take it, use it, change it ...
+# License: under MIT license 
 #
-# when run as console the stdin can be used to terminate the script
-# when run as daemon we should add a signal handler; right now I'm to lazy for that
+# This module is collecting the JSON files containing user names and device token uses
+# for Apple Push Notification and put them into an internal database tabel
 #
-# http://fah-web.stanford.edu/daily_user_summary.txt.bz2
-# 
-# SQLAlchemy
-# APNS
-# dateutil
-
+#
+# Required modules
+# APNS	https://github.com/djacobs/PyAPNs
+# dateutil	https://pypi.python.org/pypi/python-dateutil/
+# SQLite3 database
+#
 
 import os
 import sys
@@ -63,14 +63,6 @@ if __name__ == '__main__':
 
 	printcopyrightandusage()
 	
-	
-	parser = argparse.ArgumentParser(description='Process user token registration.')
-	#parser.add_argument('integers', metavar='N', type=int, nargs='+',
-	#	help='an integer for the accumulator')
-
-	args = parser.parse_args()
-	
-
 	# connect to database
 	conn = sqlite3.connect('fahmmds.db')
 	
@@ -115,6 +107,8 @@ if __name__ == '__main__':
 	conn.row_factory = dict_factory
 	c.execute("select fah_import_ds.user,fah_import_ds.team,fah_import_ds.sumCredit,fah_user_token.token from fah_user_token inner join fah_import_ds where fah_import_ds.user = fah_user_token.user;")
 	results = c.fetchall()
+ 
+	# select user,team,max(cntWU) from fah_stats_daily where user='ChristianFAH' group by user,team;
  
 	print results
 	
